@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 import os
 from multielo import MultiElo
 from  matplotlib.ticker import FuncFormatter,  MaxNLocator
+from datetime import datetime
 
 
 # Load Google Sheet
@@ -19,6 +20,11 @@ df_url = pd.read_csv(f'https://docs.google.com/spreadsheets/d/{sheet_key}/export
 df_matches = pd.DataFrame(df_url).set_index('Name')
 df_matches['New_Elo'] = df_matches['New_Elo'].astype(int)
 df_matches.to_csv('Match_Res.csv')
+
+# Backup data
+currentDateTime = datetime.now().strftime("%Y%m%d%H%M")
+print(currentDateTime)
+df_matches.to_csv(f"Matches_Backup/Match_Res_backup_{currentDateTime}.csv")
 
 # Filter out non-null data
 df_matches = df_matches[df_matches['Elo'].isnull()]
@@ -138,6 +144,4 @@ plt.savefig('Leaderboard_graph.png')
 Leaderboard.to_csv('Leaderboard.csv')
 
 print(Leaderboard)
-
-
 print(len(df_matches))
