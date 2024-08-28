@@ -11,7 +11,7 @@ load_dotenv()
 ss_id = os.getenv('key')
 
 SERVICE_ACCOUNT_FILE = 'creds.json'
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 creds = None
 creds = service_account.Credentials.from_service_account_file(
@@ -30,6 +30,12 @@ values = pd.DataFrame(values)
 new_header = values.iloc[0] 
 values = values[1:]
 values.columns = new_header
-values = values.set_index('Name') 
+#values = values.set_index('Name') 
 
-print(values)
+#up = values.values.tolist()
+
+up = values.to_json()
+#up = values.to_dict('records')
+#request = sheet.values().update(spreadsheetId=ss_id, range='Sheet2!A2:F', valueInputOption='USER_ENTERED',body=values.to_json()).execute()
+
+print(up)

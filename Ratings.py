@@ -176,5 +176,10 @@ plt.savefig('Leaderboard_graph.png')
 
 Leaderboard.to_csv(lb_d)
 
+up = Matches.values.tolist()
+
+#request = sheet.values().update(spreadsheetId=ss_id,range='Sheet2!A2:F',valueInputOption='USER_ENTERED',body=up).execute()
+
 print(Leaderboard)
 print(len(df_matches))
+print(up)
