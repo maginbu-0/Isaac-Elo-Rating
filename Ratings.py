@@ -101,7 +101,7 @@ else:
     print(match_res_p)
 
 
-# PO
+# Load Leaderbooard and Matches, and setup data
 Leaderboard = pd.read_csv('Leaderboard.csv')
 Matches = pd.read_csv('Match_Res.csv')
 
@@ -112,16 +112,18 @@ Leaderboard = Leaderboard.sort_values(by=['Elo'],ascending=False)
 
 Matches['New_Elo'] = Matches['New_Elo'].astype(int)
 
-
 m = Matches.drop('Date', axis=1)
 
 m = m[m['Result'] == 1]['Name'].value_counts()
 
+# Count wins per player
 Leaderboard['Wins'] = m
 Leaderboard['Wins'] = Leaderboard['Wins'].fillna(0)
 
+# Count matches played
 Matches['count'] = Matches.groupby('Name').cumcount() + 1
 
+# Plot graph
 sns.lineplot(data=Matches,x='count',y='New_Elo',hue='Name')
 
 sns.scatterplot(data=Matches,x='count',y='New_Elo',hue='Name',legend=False)
