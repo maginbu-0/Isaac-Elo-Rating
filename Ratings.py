@@ -8,18 +8,51 @@ import os
 from multielo import MultiElo
 from  matplotlib.ticker import FuncFormatter,  MaxNLocator
 from datetime import datetime
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+
+
+# Setting file constants
+m_d = 'Data/Match_data.csv'
+m_r = 'Data/Match_Res.csv'
+lb_d = 'Data/Leaderboard.csv'
 
 
 # Load Google Sheet
+
 load_dotenv()
-sheet_key = os.getenv('key')
-df_url = pd.read_csv(f'https://docs.google.com/spreadsheets/d/{sheet_key}/export?format=csv')
+ss_id = os.getenv('key')
+
+SERVICE_ACCOUNT_FILE = 'creds.json'
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+
+creds = None
+creds = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES
+)
+
+service = build('sheets','v4',credentials=creds)
+
+sheet = service.spreadsheets()
+result = sheet.values().get(spreadsheetId=ss_id,
+                            range='Data!A1:F').execute()
+
+values = result.get('values',[])
+
+values = pd.DataFrame(values)
+new_header = values.iloc[0] 
+values = values[1:]
+values.columns = new_header
+values = values.set_index('Name') 
 
 
 # Create Imported Results
-df_matches = pd.DataFrame(df_url).set_index('Name')
-df_matches['New_Elo'] = df_matches['New_Elo'].astype(int)
-df_matches.to_csv('Match_Res.csv')
+df_matches = values
+df_matches['New_Elo'] = df_matches['New_Elo'].astype(float).astype(int)
+df_matches.to_csv(m_r)
+
+print(df_matches)
+
 
 # Backup data
 currentDateTime = datetime.now().strftime("%Y%m%d%H%M")
@@ -28,15 +61,15 @@ df_matches.to_csv(f"Matches_Backup/Match_Res_backup_{currentDateTime}.csv")
 
 # Filter out non-null data
 df_matches = df_matches[df_matches['Elo'].isnull()]
-df_matches.to_csv('Match_data.csv')
+df_matches.to_csv(m_d)
 
 
 # Read out cleaned data
-df = pd.read_csv('Match_data.csv')
+df = pd.read_csv(m_d)
 df['Date'] = pd.to_datetime(df['Date'])
 
-loaded_LB_df = pd.read_csv('Leaderboard.csv')
-match_res = pd.read_csv('Match_Res.csv')
+loaded_LB_df = pd.read_csv(lb_d)
+match_res = pd.read_csv(m_r)
 
 # Spread data on latest and match number
 df1 = df[df.Date == df.Date.max()]
@@ -89,27 +122,27 @@ else:
 
         match_res.append(df_i)
 
-        lb['Elo'] = lb['Elo'].astype(int)
+        lb['Elo'] = lb['Elo'].astype(float).astype(int)
 
-        lb.to_csv('Leaderboard.csv')
+        lb.to_csv(lb_d)
 
     
     # Concatenate match data into the results 
     match_res = pd.concat(match_res)
 
     # Load original results and append new results
-    load_match_res = pd.read_csv('Match_Res.csv')
+    load_match_res = pd.read_csv(m_r)
     lmr = load_match_res.set_index('Name')
     print(lmr)
     lmr['Date'] = pd.to_datetime(lmr['Date'])
     match_res_p = lmr.append(match_res)
-    match_res_p.to_csv('Match_Res.csv')    
+    match_res_p.to_csv(m_r)    
     print(match_res_p)
 
 
 # Load Leaderbooard and Matches, and setup data
-Leaderboard = pd.read_csv('Leaderboard.csv')
-Matches = pd.read_csv('Match_Res.csv')
+Leaderboard = pd.read_csv(lb_d)
+Matches = pd.read_csv(m_r)
 
 
 Leaderboard = Leaderboard.set_index('Name')
@@ -141,7 +174,7 @@ plt.xlabel('Games Played')
 
 plt.savefig('Leaderboard_graph.png')
 
-Leaderboard.to_csv('Leaderboard.csv')
+Leaderboard.to_csv(lb_d)
 
 print(Leaderboard)
 print(len(df_matches))
