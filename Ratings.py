@@ -72,6 +72,11 @@ loaded_LB_df = pd.read_csv(lb_d)
 match_res = pd.read_csv(m_r)
 
 # Spread data on latest and match number
+#
+# I can put this into the for loop 
+#
+
+
 df1 = df[df.Date == df.Date.max()]
 
 df_collec = {y: df1[df1['Match']==y] for y in df1['Match'].unique()}
