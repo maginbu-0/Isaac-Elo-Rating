@@ -15,9 +15,9 @@ new_player = pd.DataFrame(new_player,columns=cols)
 
 LB = pd.concat([LB,new_player])
 
-Lb = LB.set_index('Name')
-
 LB = LB.sort_values(by=['Elo'],ascending=False)
+
+LB = LB.reset_index(drop=True)
 
 LB.to_csv('Data/Leaderboard.csv', index=False)
 
