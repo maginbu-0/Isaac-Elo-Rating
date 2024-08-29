@@ -181,6 +181,12 @@ plt.xlabel('Games Played')
 
 plt.savefig('Leaderboard_graph.png')
 
+# Calculate starting Elo for new players
+
+Elo_mean = np.mean(Leaderboard['Elo'])
+Elo_mean = pd.DataFrame(Elo_mean)
+ 
+
 # Save clean data
 Leaderboard.to_csv(lb_d)
 match.to_csv(m_r)
