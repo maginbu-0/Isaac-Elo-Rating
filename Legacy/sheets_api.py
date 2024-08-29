@@ -1,6 +1,7 @@
 ###   USE py -m pip install  ###
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
+import gspread
 
 
 from dotenv import load_dotenv
@@ -30,12 +31,12 @@ values = pd.DataFrame(values)
 new_header = values.iloc[0] 
 values = values[1:]
 values.columns = new_header
-#values = values.set_index('Name') 
+#values = values.to_json()
 
-#up = values.values.tolist()
+data = [values.columns.values.tolist()]
+data.extend(values.values.tolist())
+value_range_body = {"values": data}
 
-up = values.to_json()
-#up = values.to_dict('records')
-#request = sheet.values().update(spreadsheetId=ss_id, range='Sheet2!A2:F', valueInputOption='USER_ENTERED',body=values.to_json()).execute()
+request = sheet.values().update(spreadsheetId=ss_id, range='Sheet2!A2', valueInputOption='USER_ENTERED',body=value_range_body).execute()
 
-print(up)
+print(data)

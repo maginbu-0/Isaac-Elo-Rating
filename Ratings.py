@@ -10,7 +10,7 @@ from  matplotlib.ticker import FuncFormatter,  MaxNLocator
 from datetime import datetime
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-
+import gspread
 
 # Setting file constants
 m_d = 'Data/Match_data.csv'
@@ -24,7 +24,7 @@ load_dotenv()
 ss_id = os.getenv('key')
 
 SERVICE_ACCOUNT_FILE = 'creds.json'
-SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 creds = None
 creds = service_account.Credentials.from_service_account_file(
@@ -148,13 +148,16 @@ else:
 # Load Leaderbooard and Matches, and setup data
 Leaderboard = pd.read_csv(lb_d)
 Matches = pd.read_csv(m_r)
+Matches['New_Elo'] = Matches['New_Elo'].astype(int)
 
+match = pd.DataFrame(Matches)
+lead = pd.DataFrame(Leaderboard)
 
 Leaderboard = Leaderboard.set_index('Name')
 
 Leaderboard = Leaderboard.sort_values(by=['Elo'],ascending=False)
 
-Matches['New_Elo'] = Matches['New_Elo'].astype(int)
+
 
 m = Matches.drop('Date', axis=1)
 
@@ -179,12 +182,19 @@ plt.xlabel('Games Played')
 
 plt.savefig('Leaderboard_graph.png')
 
+# Save clean data
 Leaderboard.to_csv(lb_d)
+match.to_csv(m_r)
 
-up = Matches.values.tolist()
+data = [match.columns.values.tolist()]
+data.extend(match.values.tolist())
+value_range_body = {"values": data}
 
-#request = sheet.values().update(spreadsheetId=ss_id,range='Sheet2!A2:F',valueInputOption='USER_ENTERED',body=up).execute()
+dataL = [lead.columns.values.tolist()]
+dataL.extend(lead.values.tolist())
+bodyL = {"values": dataL}
 
-print(Leaderboard)
-print(len(df_matches))
-print(up)
+request = sheet.values().update(spreadsheetId=ss_id, range='Data!A1', valueInputOption='USER_ENTERED',body=value_range_body).execute()
+request = sheet.values().update(spreadsheetId=ss_id, range='Leaderboard!A1', valueInputOption='USER_ENTERED',body=bodyL).execute()
+
+
