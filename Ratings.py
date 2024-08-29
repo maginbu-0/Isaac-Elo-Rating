@@ -51,7 +51,6 @@ df_matches = values
 df_matches['New_Elo'] = df_matches['New_Elo'].astype(float).astype(int)
 df_matches.to_csv(m_r)
 
-print(df_matches)
 
 
 # Backup data
@@ -138,11 +137,11 @@ else:
     # Load original results and append new results
     load_match_res = pd.read_csv(m_r)
     lmr = load_match_res.set_index('Name')
-    print(lmr)
+    
     lmr['Date'] = pd.to_datetime(lmr['Date'])
     match_res_p = lmr.append(match_res)
     match_res_p.to_csv(m_r)    
-    print(match_res_p)
+
 
 
 # Load Leaderbooard and Matches, and setup data

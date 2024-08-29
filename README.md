@@ -1,8 +1,8 @@
-# The Binding of Isaac: Four Souls Elo Rating 
+# Multiplayer Elo Rating database and calculator
 
-This was created as a personal proyect for my playgroup. 
+This was created as a personal proyect for my playgrou for the game 'The Binding of Isaac: Four Souls'; it is a card game designed by Edmund McMillen. Based on the indie video game The Binding of Isaac, players control one of several characters as they defeat bosses to collect Lost Souls.
 
-The Binding of Isaac: Four Souls is a card game designed by Edmund McMillen. Based on the indie video game The Binding of Isaac, players control one of several characters as they defeat bosses to collect Lost Souls.
+This code can be applied to any multiplayer games and should work correctly.
 
 This Elo rating calculator takes a datasheet of matches played, and performs calculations based on djcunningham0's [MultiElo](https://github.com/djcunningham0/multielo/tree/main) package.
 
