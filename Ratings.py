@@ -13,9 +13,9 @@ from googleapiclient.discovery import build
 import gspread
 
 # Setting file constants
-m_d = 'Data/Match_data.csv'
-m_r = 'Data/Match_Res.csv'
-lb_d = 'Data/Leaderboard.csv'
+m_d = 'data/match_data.csv' 
+m_r = 'data/match_res.csv'
+lb_d = 'data/leaderboard.csv'
 
 
 # Load Google Sheet
@@ -56,7 +56,7 @@ df_matches.to_csv(m_r)
 # Backup data
 currentDateTime = datetime.now().strftime("%Y%m%d%H%M")
 print(currentDateTime)
-df_matches.to_csv(f"Matches_Backup/Match_Res_backup_{currentDateTime}.csv")
+df_matches.to_csv(f"matches_backup/match_res_backup_{currentDateTime}.csv")
 
 # Filter out non-null data
 df_matches = df_matches[df_matches['Elo'].isnull()]
@@ -145,16 +145,16 @@ else:
 
 
 # Load Leaderbooard and Matches, and setup data
-Leaderboard = pd.read_csv(lb_d)
+leaderboard = pd.read_csv(lb_d)
 Matches = pd.read_csv(m_r)
 Matches['New_Elo'] = Matches['New_Elo'].astype(int)
 
 match = pd.DataFrame(Matches)
-lead = pd.DataFrame(Leaderboard)
+lead = pd.DataFrame(leaderboard)
 
-Leaderboard = Leaderboard.set_index('Name')
+leaderboard = leaderboard.set_index('Name')
 
-Leaderboard = Leaderboard.sort_values(by=['Elo'],ascending=False)
+leaderboard = leaderboard.sort_values(by=['Elo'],ascending=False)
 
 
 
@@ -163,8 +163,8 @@ m = Matches.drop('Date', axis=1)
 m = m[m['Result'] == 1]['Name'].value_counts()
 
 # Count wins per player
-Leaderboard['Wins'] = m
-Leaderboard['Wins'] = Leaderboard['Wins'].fillna(0)
+leaderboard['Wins'] = m
+leaderboard['Wins'] = leaderboard['Wins'].fillna(0)
 
 # Count matches played
 Matches['count'] = Matches.groupby('Name').cumcount() + 1
@@ -179,16 +179,10 @@ plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 plt.ylabel('Elo Rating')
 plt.xlabel('Games Played')
 
-plt.savefig('Leaderboard_graph.png')
-
-# Calculate starting Elo for new players
-
-Elo_mean = np.mean(Leaderboard['Elo'])
-Elo_mean = pd.DataFrame(Elo_mean)
- 
+plt.savefig('leaderboard_graph.png')
 
 # Save clean data
-Leaderboard.to_csv(lb_d)
+leaderboard.to_csv(lb_d)
 match.to_csv(m_r)
 
 data = [match.columns.values.tolist()]
