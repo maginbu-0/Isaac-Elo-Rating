@@ -48,7 +48,7 @@ values = values.set_index('Name')
 
 # Create Imported Results
 df_matches = values
-df_matches['New_Elo'] = df_matches['New_Elo'].astype(float).astype(int)
+#df_matches['New_Elo'] = df_matches['New_Elo'].astype(float).astype(int)
 df_matches.to_csv(m_r)
 
 
@@ -137,9 +137,10 @@ else:
     # Load original results and append new results
     load_match_res = pd.read_csv(m_r)
     lmr = load_match_res.set_index('Name')
+    lmr = lmr.dropna()
     
     lmr['Date'] = pd.to_datetime(lmr['Date'])
-    match_res_p = lmr.append(match_res)
+    match_res_p = pd.concat([lmr, match_res])
     match_res_p.to_csv(m_r)    
 
 
@@ -147,7 +148,7 @@ else:
 # Load Leaderbooard and Matches, and setup data
 leaderboard = pd.read_csv(lb_d)
 Matches = pd.read_csv(m_r)
-Matches['New_Elo'] = Matches['New_Elo'].astype(int)
+#Matches['New_Elo'] = Matches['New_Elo'].astype(int)
 
 match = pd.DataFrame(Matches)
 lead = pd.DataFrame(leaderboard)
@@ -162,9 +163,12 @@ m = Matches.drop('Date', axis=1)
 
 m = m[m['Result'] == 1]['Name'].value_counts()
 
+print(m)
+
 # Count wins per player
-leaderboard['Wins'] = m
-leaderboard['Wins'] = leaderboard['Wins'].fillna(0)
+leaderboard['Wins'] = m.astype(int)
+leaderboard['Wins'] = leaderboard['Wins'].fillna(0).astype(int)
+
 
 # Count matches played
 Matches['count'] = Matches.groupby('Name').cumcount() + 1
@@ -182,6 +186,7 @@ plt.xlabel('Games Played')
 plt.savefig('leaderboard_graph.png')
 
 # Save clean data
+print(leaderboard)
 leaderboard.to_csv(lb_d)
 match.to_csv(m_r)
 
@@ -194,6 +199,6 @@ dataL.extend(lead.values.tolist())
 bodyL = {"values": dataL}
 
 request = sheet.values().update(spreadsheetId=ss_id, range='Data!A1', valueInputOption='USER_ENTERED',body=value_range_body).execute()
-request = sheet.values().update(spreadsheetId=ss_id, range='Leaderboard!A1', valueInputOption='USER_ENTERED',body=bodyL).execute()
+#request = sheet.values().update(spreadsheetId=ss_id, range='Leaderboard!A1', valueInputOption='USER_ENTERED',body=bodyL).execute()
 
 
