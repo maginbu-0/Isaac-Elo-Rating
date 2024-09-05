@@ -6,11 +6,11 @@ from datetime import datetime as dt
 from dotenv import load_dotenv
 import os
 from multielo import MultiElo
-from  matplotlib.ticker import FuncFormatter,  MaxNLocator
+from  matplotlib.ticker import  MaxNLocator
 from datetime import datetime
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-import gspread
+
 
 # Setting file constants
 m_d = 'data/match_data.csv' 
