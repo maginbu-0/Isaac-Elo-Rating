@@ -174,16 +174,17 @@ leaderboard['Wins'] = leaderboard['Wins'].fillna(0).astype(int)
 Matches['count'] = Matches.groupby('Name').cumcount() + 1
 
 # Plot graph
-sns.lineplot(data=Matches,x='count',y='New_Elo',hue='Name')
+sns.lineplot(data=Matches,x='count',y='New_Elo',hue='Name',legend=False)
 
-sns.scatterplot(data=Matches,x='count',y='New_Elo',hue='Name',legend=False)
+sns.scatterplot(data=Matches,x='count',y='New_Elo',hue='Name',legend=True)
 
 plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 plt.ylabel('Elo Rating')
 plt.xlabel('Games Played')
+plt.legend(bbox_to_anchor=(1, 1), loc='upper left', borderaxespad=0)
 
-plt.savefig('leaderboard_graph.png')
+plt.savefig('leaderboard_graph.png',bbox_inches='tight')
 
 # Save clean data
 print(leaderboard)
